@@ -37,7 +37,7 @@ class CrudClients(ICrud):
             print("¿El cliente tiene tarjeta de descuento? (s/n): ")
             gotoxy(32,2);nombre = input() 
             gotoxy(34,3);apellido = input()
-            gotoxy(30,4);dni = int(input())
+            gotoxy(30,4);dni = str(input())
             gotoxy(48,5);card = input()
             json_file = JsonFile(path +'/archivos/clients.json')
             clients = json_file.read()
@@ -59,10 +59,11 @@ class CrudClients(ICrud):
                 print(dato)
             gotoxy(32,2);nombre = input()
             gotoxy(34,3);apellido = input()
-            gotoxy(30,4);dni = int(input())
+            gotoxy(30,4);dni = str(input())
             json_file = JsonFile(path +'/archivos/clients.json')
             clients = json_file.read()
             found_dni = json_file.find('dni',dni)
+         
             if found_dni:
                 print('Ya existe un cliente registrado con ese DNI')
                 time.sleep(3)
@@ -84,37 +85,45 @@ class CrudClients(ICrud):
         print(blue_color + "Actualización de Cliente")
         print(blue_color + Company.get_business_name())
 
-        json_file = JsonFile(path +'/archivos/clients.json')
+        json_file = JsonFile(path + '/archivos/clients.json')
         clients = json_file.read()
-        dni = int(input('Ingrese DNI: '))
-        found_dni = json_file.find('dni',dni)
+        dni = input('Ingrese DNI: ')
+        found_dni = json_file.find('dni', dni)
         if found_dni:
             print(f'Su cliente es: {found_dni}')
             print('Que desea actualizar?')
             print('1. Cambiar el nombre del Cliente')
             print('2. Cambiar el apellido del Cliente')
             print('Elija una opcion: ')
-            gotoxy(19,8);opcion = input()
+            
+            gotoxy(19, 9);opcion = input()
             if opcion == "1":
                 print('Ingrese el nuevo nombre de su cliente: ')
-                gotoxy(40,8); new_name = input()
+                gotoxy(40, 9);new_name = input()
                 found_dni[0]['nombre'] = new_name
                 print(found_dni)
-                json_file.save(clients)               
+                # Reemplazar el cliente antiguo con el cliente modificado en la lista de clientes
+                clients = [found_dni[0] if client['dni'] == dni else client for client in clients]
+                json_file.save(clients)
                 print('Se cambio el nombre con existo!')
-                time.sleep(3)
+                time.sleep(10)
             elif opcion == "2":
                 print('Ingrese el nuevo apellido de su cliente: ')
-                gotoxy(42,9); new_lastname = input()
-                found_dni[1]['apellido'] = new_lastname              
+                gotoxy(42, 9);new_lastname = input()
+                found_dni[0]['apellido'] = new_lastname
+                # Reemplazar el cliente antiguo con el cliente modificado en la lista de clientes
+                clients = [found_dni[0] if client['dni'] == dni else client for client in clients]
                 json_file.save(clients)
                 print('Se cambio el apellido con existo!')
-                time.sleep(3)
+                time.sleep(10)
             else:
                 print('Opcion invalida')
+                time.sleep(10)
                 return
         else:
             print('DNI no existe')
+            time.sleep(10)
+    
 
 
 
@@ -124,7 +133,7 @@ class CrudClients(ICrud):
         print(green_color+"*"*90+reset_color)
         print(blue_color+"Eliminar Cliente")
         print(blue_color+Company.get_business_name())
-        dni = int(input("Ingrese el DNI del cliente que desea eliminar: "))
+        dni = input("Ingrese el DNI del cliente que desea eliminar: ")
         json_file = JsonFile(path+'/archivos/clients.json')
         clients = json_file.read()
 
@@ -153,7 +162,7 @@ class CrudClients(ICrud):
         print('\033c', end='')
         gotoxy(2,1);print(green_color+"█"*90)
         gotoxy(2,2);print("██"+" "*34+"Consulta de Cliente"+" "*35+"██")
-        gotoxy(2,4);dni = int(input("Ingrese DNI del cliente: "))
+        gotoxy(2,4);dni = input("Ingrese DNI del cliente: ")
         json_file = JsonFile(path+'/archivos/clients.json')
         clients = json_file.find("dni", dni)
         if clients:
