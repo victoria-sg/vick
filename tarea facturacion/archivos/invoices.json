@@ -29,7 +29,6 @@
         "iva": 3.67,
         "total": 34.27,
         "detalle": [
-
             {
                 "poducto": "aceite",
                 "precio": 2.0,
@@ -39,6 +38,27 @@
                 "poducto": "Coca Cola",
                 "precio": 1.5,
                 "cantidad": 8
+            }
+        ]
+    },
+    {
+        "factura": 3,
+        "Fecha": "2024-04-30",
+        "cliente": "yo estoy bruta",
+        "subtotal": 55.0,
+        "descuento": 5.5,
+        "iva": 5.94,
+        "total": 55.44,
+        "detalle": [
+            {
+                "poducto": "atun",
+                "precio": 1.0,
+                "cantidad": 5
+            },
+            {
+                "poducto": "atun",
+                "precio": 1.0,
+                "cantidad": 50
             }
         ]
     }

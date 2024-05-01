@@ -19,120 +19,137 @@ class CrudClients(ICrud):
         borrarPantalla()
         print('\033c', end='')
         print(green_color+"*"*90+reset_color)
-        print(blue_color+"Registro de Cliente")
-        print(blue_color+Company.get_business_name())
+        gotoxy(15,2);print(blue_color+Company.get_business_name())
+        gotoxy(27,3);print(blue_color+"Registro de Cliente")
+        print("-" * 90)
         print(purple_color+"Seleccione el tipo de cliente:")
-        
         print("1. Cliente Regular")
         print("2. Cliente VIP")
+        print("-" * 90)
         tipo_cliente = input("Seleccione una opción: ")
         borrarPantalla()
         
         array_datos_clients = ["Ingrese el nombre del cliente: ","Ingrese el apellido del cliente: ","Ingrese el DNI del cliente: "] 
-
+        print("-" * 90)
         if tipo_cliente == "1":
-            print("Cliente Regular")
+            gotoxy(15,2);print("Cliente Regular")
+            print()
             for dato in array_datos_clients:
                 print(dato)
             print("¿El cliente tiene tarjeta de descuento? (s/n): ")
-            gotoxy(32,2);nombre = input() 
-            gotoxy(34,3);apellido = input()
-            gotoxy(30,4);dni = str(input())
-            gotoxy(48,5);card = input()
+            gotoxy(32,3);nombre = input() 
+            gotoxy(34,4);apellido = input()
+            gotoxy(30,5);dni = str(input())
+            gotoxy(48,6);card = input()
             json_file = JsonFile(path +'/archivos/clients.json')
             clients = json_file.read()
             found_dni = json_file.find('dni',dni)
             if found_dni:
-                print('Ya existe un cliente registrado con ese DNI')
+                print()
+                gotoxy(15,5);print('Ya existe un cliente registrado con ese DNI')
                 time.sleep(3)
                 return
             
             new_client = RegularClient(nombre, apellido, dni, card)
             clients.append(new_client.getJson())
             json_file.save(clients)
-            print("Cliente registrado exitosamente!")
+            print()
+            gotoxy(15,15);print("Cliente registrado exitosamente!")
             time.sleep(3)
 
         elif tipo_cliente == "2":
-            print("Cliente VIP")
+            gotoxy(15,2); print("Cliente VIP")
+            print()
             for dato in array_datos_clients:
                 print(dato)
-            gotoxy(32,2);nombre = input()
-            gotoxy(34,3);apellido = input()
-            gotoxy(30,4);dni = str(input())
+            gotoxy(32,4);nombre = input()
+            gotoxy(34,5);apellido = input()
+            gotoxy(30,6);dni = str(input())
             json_file = JsonFile(path +'/archivos/clients.json')
             clients = json_file.read()
             found_dni = json_file.find('dni',dni)
          
             if found_dni:
-                print('Ya existe un cliente registrado con ese DNI')
+                gotoxy(15,5);print('Ya existe un cliente registrado con ese DNI')
                 time.sleep(3)
             else:
                 new_client = VipClient(nombre, apellido, dni)
                 clients.append(new_client.getJson())
                 json_file.save(clients)
-                print("Cliente registrado exitosamente!")
+                gotoxy(15,5);print("Cliente registrado exitosamente!")
                 time.sleep(3)
             new_client = VipClient(nombre, apellido, dni)
         else:
-            print("Opción inválida")
+            gotoxy(15,5);print("Opción inválida")
+            time.sleep(4)
             return
     
     def update(self):
         borrarPantalla()
         print('\033c', end='')
         print(green_color + "*" * 90 + reset_color)
-        print(blue_color + "Actualización de Cliente")
-        print(blue_color + Company.get_business_name())
+        gotoxy(15,2);print(blue_color + Company.get_business_name())
+        gotoxy(27,3);print(blue_color + "Actualización de Cliente")
+        print("-" * 90)
 
         json_file = JsonFile(path + '/archivos/clients.json')
         clients = json_file.read()
         dni = input('Ingrese DNI: ')
         found_dni = json_file.find('dni', dni)
         if found_dni:
-            print(f'Su cliente es: {found_dni}')
+            for client in found_dni:
+                print(f'Su cliente es: {client["nombre"]} {client["apellido"]}')
+                print(f'Descuento: {client["valor"]}')
+                print("-" * 90)
+
             print('Que desea actualizar?')
             print('1. Cambiar el nombre del Cliente')
             print('2. Cambiar el apellido del Cliente')
-            print('Elija una opcion: ')
-            
-            gotoxy(19, 9);opcion = input()
+
+            opcion = input('Elija una opcion: ')
+            print("-" * 90)
+
+            borrarPantalla()
+            print("-" * 90)
             if opcion == "1":
-                print('Ingrese el nuevo nombre de su cliente: ')
-                gotoxy(40, 9);new_name = input()
+                gotoxy(15,2);print('Cambio de nombre')
+                new_name = input('Ingrese el nuevo nombre de su cliente: ')
                 found_dni[0]['nombre'] = new_name
-                print(found_dni)
                 # Reemplazar el cliente antiguo con el cliente modificado en la lista de clientes
                 clients = [found_dni[0] if client['dni'] == dni else client for client in clients]
                 json_file.save(clients)
-                print('Se cambio el nombre con existo!')
-                time.sleep(10)
+                gotoxy(10,12);print('Se cambio el nombre con existo!')
+                print("-" * 90)
+                time.sleep(4)
+                
             elif opcion == "2":
-                print('Ingrese el nuevo apellido de su cliente: ')
-                gotoxy(42, 9);new_lastname = input()
+                gotoxy(15,2);print('Cambio de Apellido')
+                new_lastname = input('Ingrese el nuevo apellido de su cliente: ')
                 found_dni[0]['apellido'] = new_lastname
                 # Reemplazar el cliente antiguo con el cliente modificado en la lista de clientes
                 clients = [found_dni[0] if client['dni'] == dni else client for client in clients]
                 json_file.save(clients)
-                print('Se cambio el apellido con existo!')
-                time.sleep(10)
+                gotoxy(10,12);print('Se cambio el apellido con existo!')
+                print("-" * 90)
+                time.sleep(4)
             else:
                 print('Opcion invalida')
-                time.sleep(10)
+                time.sleep(3)
                 return
         else:
             print('DNI no existe')
-            time.sleep(10)
-    
-
+            print("-" * 90)
+            time.sleep(4)
 
 
     def delete(self):
         borrarPantalla()
         print('\033c', end='')
         print(green_color+"*"*90+reset_color)
-        print(blue_color+"Eliminar Cliente")
-        print(blue_color+Company.get_business_name())
+        gotoxy(15,2);print(blue_color+Company.get_business_name())
+        gotoxy(27,3);print(blue_color+"Eliminar Cliente")
+        print("-" * 90)
+        print()
         dni = input("Ingrese el DNI del cliente que desea eliminar: ")
         json_file = JsonFile(path+'/archivos/clients.json')
         clients = json_file.read()
@@ -140,61 +157,65 @@ class CrudClients(ICrud):
         found_dni = json_file.find('dni',dni)
 
         if found_dni:
-            print(found_dni)
+            for client in found_dni:
+                print(f'Su cliente es: {client["nombre"]} {client["apellido"]}')
+                print("-" * 90)
             opcion = input('Esta seguro de eliminar a su cliente? (s/n): ').lower()
             if opcion == "s":
                 clients.remove(found_dni[0]) 
                 json_file.save(clients)  
-                print("El cliente ha sido eliminado correctamente.")
+                gotoxy(15,5);print("El cliente ha sido eliminado correctamente.")
                 time.sleep(3)
             else:
-                print("Operación cancelada...")
+                gotoxy(15,5);print("Operación cancelada...")
                 time.sleep(3)
                 return
         else:
-            print("No se encontró ningún cliente con el DNI proporcionado.")
+            gotoxy(15,5);print("No se encontró ningún cliente con el DNI proporcionado.")
             time.sleep(3)
-
-
 
     
     def consult(self):
+        borrarPantalla()
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Consulta de Cliente"+" "*35+"██")
-        gotoxy(2,4);dni = input("Ingrese DNI del cliente: ")
+        gotoxy(15,2);print(blue_color+Company.get_business_name())
+        gotoxy(2,1);print(green_color+"*"*90)
+        gotoxy(27,3);print("Consulta de Cliente")
+        print("-" * 90) 
+        gotoxy(1,);dni = input('Ingrese DNI del cliente: ')
+        
         json_file = JsonFile(path+'/archivos/clients.json')
         clients = json_file.find("dni", dni)
+
         if clients:
+            print("-" * 90) 
             for client in clients:
-                print(f'DNI: {client["dni"]}')
                 print(f'Nombre: {client["nombre"]}')
                 print(f'Apellido: {client["apellido"]}')
                 print(f'Descuento: {client["valor"]}')
-                print("-" * 30) 
+                print("-" * 90) 
             time.sleep(3)
         else:
-            print("Cliente no encontrado.")
+            gotoxy(15,6);print("Cliente no encontrado.")
             time.sleep(3)
-        input("Presione una tecla para continuar...")  
+        print()
+        gotoxy(15,6);input("Presione una tecla para continuar...")  
          
 
 class CrudProducts(ICrud):
     def create(self):
-        
         borrarPantalla()
-        gotoxy(14,1);print(blue_color + Company.get_business_name())
-        gotoxy(3,2);print(blue_color+"-"*90 + reset_color)
-        gotoxy(20,2);print(blue_color + "Registro de Productos")
+        gotoxy(15,1);print(blue_color + Company.get_business_name())
+        gotoxy(25,2);print(blue_color + "Registro de Productos")
+        print(blue_color+"-"*90 + reset_color)
 
+        gotoxy(1,4); print('Ingrese el producto: ')
+        gotoxy(1,5); print('Ingrese el precio del producto:')
+        gotoxy(1,6); print('Ingrese el stock del producto:')
 
-        gotoxy(8,5); print('Ingrese el producto: ')
-        gotoxy(8,6); print('Ingrese el preci del producto:')
-        gotoxy(8,7); print('Ingrese el stock del producto:')
-
-        gotoxy(30,5); descripcion = input()
-        gotoxy(40,6); preci = float(input())
-        gotoxy(39,7); stock = int(input())
+        gotoxy(22,4); descripcion = input()
+        gotoxy(33,5); preci = float(input())
+        gotoxy(32,6); stock = int(input())
 
         # Obtener el último ID almacenado en el archivo JSON
         json_file = JsonFile(path + '/archivos/products.json')
@@ -208,22 +229,25 @@ class CrudProducts(ICrud):
         buscar_producto = json_file.find('descripcion',descripcion)
 
         if buscar_producto:
-            gotoxy(35,20); print(f'El producto {descripcion} ya esta registrado.')
+            gotoxy(35,22); print(f'El producto {descripcion} ya esta registrado.')
             time.sleep(3)
             return
         else:
             products.append(new_product.getJson())
             json_file.save(products)
-            gotoxy(32,22);print('El producto se ha registrado con exito!')
+            gotoxy(30,25);print('El producto se ha registrado con exito!')
             time.sleep(4)
+
 
 
     def update(self):
         borrarPantalla()
         print('\033c', end='')
         print(green_color + "*" * 90 + reset_color)
-        print(blue_color + "Actualizar productos")
-        print(blue_color + Company.get_business_name())
+        gotoxy(15,2);print(green_color + Company.get_business_name())
+        gotoxy(27,3);print(green_color + "Actualizar productos")
+        print("-" * 90)
+        print()
 
         id = int(input('Ingrese el ID del producto que va a actualizar: '))
         json_file = JsonFile(path + '/archivos/products.json')
@@ -236,17 +260,25 @@ class CrudProducts(ICrud):
                 break
 
         if found_product:
-            print(f'Su producto es: {found_product}')
+            print(f'Producto: {found_product["id"]}')
+            print(f'Producto: {found_product["descripcion"]}')
+            print(f'Precio: {found_product["precio"]}')
+            print(f'Stock: {found_product["stock"]}')
+            print("-" * 90) 
+        
             print('Qué va a actualizar?')
             print('1. Nombre del producto.')
             print('2. precio del producto.')
             print('3. Stock del producto.')
+            print()
             opcion = input('Elija una opción: ')
+            print("-" * 90)
+
             if opcion == "1":
                 new_name = input('Ingrese el nuevo nombre del producto: ')
                 existing_product = next((prod for prod in products if prod['descripcion'].lower() == new_name.lower() and prod['id'] != id), None)
                 if existing_product:
-                    print(f"Este producto ya existe con el ID {existing_product['id']}.")
+                    gotoxy(15,4);print(f"Este producto ya existe con el ID {existing_product['id']}.")
                 else:
                     found_product['descripcion'] = new_name
             elif opcion == "2":
@@ -258,9 +290,9 @@ class CrudProducts(ICrud):
 
             # Guardar los cambios en el archivo JSON
             json_file.save(products)
-            print("Producto actualizado exitosamente!")
+            gotoxy(15,4);print("Producto actualizado exitosamente!")
         else:
-            print("Producto no encontrado.")
+            gotoxy(15,4);print("Producto no encontrado.")
         time.sleep(3)
 
     
@@ -346,9 +378,8 @@ class CrudSales(ICrud):
         gotoxy(1,10); print("Cedula :")
 
 
-        dni = validar.solo_numeros("Error: Solo números", 10, 9)  # Solicita el número de cédula del cliente
-        dni= int(dni)
-
+        dni = validar.solo_numeros("Error: Solo números", 10, 8)  # Solicita el número de cédula del cliente
+        
         json_file = JsonFile(path +'/archivos/clients.json')
 
         client = json_file.find("dni", dni)  # Busca al cliente por su número de cédula
@@ -374,7 +405,7 @@ class CrudSales(ICrud):
 
         while follow.lower() == "s":
             gotoxy(1, 14); print(f"{line}", end="   ")
-            id = validar.solo_numeros("Error: Solo números", 13, 14)  # Solicita el ID del producto
+            id = validar.solo_numeros("Error: Solo números", 13, 13)  # Solicita el ID del producto
             id=int(id)
             
             json_file = JsonFile( path+ '/archivos/products.json')
@@ -383,26 +414,48 @@ class CrudSales(ICrud):
 
             if not prods:
                 gotoxy(1, 15);print("Producto no existe")
+                
                 time.sleep(3)
+                break
             else:
                 prods = prods[0]
-                product = Product(prods["id"], prods["descripcion"], prods["precio"],prods["stock"])  # Crea un producto
-                gotoxy(26,9);print(product.descrip); gotoxy(42,9); print(product.preci)
+                product = Product(prods["id"], prods["descripcion"], prods["precio"],prods["stock"])  # Crea un producto en la factura
+
+                gotoxy(26,9);print(product.descrip)
+                gotoxy(42,9); print(product.preci)
                 qyt = int(validar.solo_numeros("Error: Solo números", 53, 9))  # Solicita la cantidad de producto
-                subtotal = product.preci * qyt
-                gotoxy(63,9);print(subtotal)
-                sale.add_detail(product, qyt)  # Agrega el detalle de la venta
 
-                follow = input("¿Desea agregar otro producto? (s/n): ").lower()
-                if follow == "s":
-                    print(green_color + "✔" + reset_color)
-                    line += 1
+                if qyt > product.stock:
+                    gotoxy(1, 15);print(f"El producto solo tiene un stock de {product.stock} ")
+                    respuesta = input('Desea llevar esa cantidad? (s/n): ').lower()
+                    if respuesta == 's':
+                        qyt = product.stock  # Actualiza la cantidad a la disponible en stock
+                        new_subtotal = product.preci * qyt  # Calcula el nuevo subtotal
+                        gotoxy(53, 7); print(qyt)  # Imprime la nueva cantidad
+                        gotoxy(63, 7); print(new_subtotal)  # Imprime el nuevo subtotal
+                        time.sleep(3)
+                        
+                        sale.add_detail(product, qyt)
+                        break
+                        
+                    else:
+                        subtotal = product.preci * qyt
+                        gotoxy(63,9);print(subtotal)
+                        sale.add_detail(product, qyt)  # Agrega el detalle de la venta
                 else:
+                    subtotal = product.preci * qyt
+                    gotoxy(63,9);print(subtotal)
+                    sale.add_detail(product, qyt)
+                    follow = input("¿Desea agregar otro producto? (s/n): ").lower()
+                    if follow == "s":
+                        print(green_color + "✔" + reset_color)
+                        line += 1
+                    else:
 
-                    print(f"Subtotal: {round(sale.subtotal, 2)}")
-                    print(f"Descuento: {round(sale.discount, 2)}")
-                    print(f"Iva     : {round(sale.iva, 2)}")
-                    print(f"Total   : {round(sale.total, 2)}")
+                        print(f"Subtotal: {round(sale.subtotal, 2)}")
+                        print(f"Descuento: {round(sale.discount, 2)}")
+                        print(f"Iva     : {round(sale.iva, 2)}")
+                        print(f"Total   : {round(sale.total, 2)}")
 
         print(red_color + "¿Está seguro de grabar la venta? (s/n): ", end='')
         procesar = input().lower()  # Pregunta si se quiere grabar la venta
