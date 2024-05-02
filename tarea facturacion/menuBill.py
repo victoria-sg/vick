@@ -239,7 +239,6 @@ class CrudProducts(ICrud):
             time.sleep(4)
 
 
-
     def update(self):
         borrarPantalla()
         print('\033c', end='')
@@ -260,7 +259,7 @@ class CrudProducts(ICrud):
                 break
 
         if found_product:
-            print(f'Producto: {found_product["id"]}')
+            
             print(f'Producto: {found_product["descripcion"]}')
             print(f'Precio: {found_product["precio"]}')
             print(f'Stock: {found_product["stock"]}')
@@ -273,26 +272,53 @@ class CrudProducts(ICrud):
             print()
             opcion = input('Elija una opción: ')
             print("-" * 90)
-
+        
+            borrarPantalla()
             if opcion == "1":
+
+                gotoxy(15,0);print('Cambio de nombre del producto.')
+                print()
                 new_name = input('Ingrese el nuevo nombre del producto: ')
                 existing_product = next((prod for prod in products if prod['descripcion'].lower() == new_name.lower() and prod['id'] != id), None)
+                print("-" * 90)
                 if existing_product:
-                    gotoxy(15,4);print(f"Este producto ya existe con el ID {existing_product['id']}.")
+                    gotoxy(10,5);print(f"Este producto ya existe con el ID {existing_product['id']}.")
+                    
                 else:
                     found_product['descripcion'] = new_name
+                    print("-" * 90)
+                    json_file.save(products)
+            
+                    gotoxy(10,6);print("Nombre del producto actualizado exitosamente!")
+                    time.sleep(4)
+
             elif opcion == "2":
+                
+                gotoxy(15,0);print('Cambio de precio del producto.')
+                print()
                 new_preci = input('Ingrese el nuevo precio del producto: ')
                 found_product['precio'] = float(new_preci)
+                print("-" * 90)
+                json_file.save(products)
+            
+                gotoxy(10,6);print("Precio del producto actualizado exitosamente!")
+                time.sleep(4)
             elif opcion == "3":
+                
+                gotoxy(15,0);print('Cambio stock del producto.')
+                print()
                 new_stock = input('Ingrese el nuevo stock del producto: ')
                 found_product['stock'] = int(new_stock)
+                print("-" * 90)
+                json_file.save(products)
+            
+                gotoxy(10,6);print("Stock del producto actualizado exitosamente!")
+                time.sleep(4)
 
             # Guardar los cambios en el archivo JSON
-            json_file.save(products)
-            gotoxy(15,4);print("Producto actualizado exitosamente!")
         else:
-            gotoxy(15,4);print("Producto no encontrado.")
+            
+            gotoxy(15,5);print("Producto no encontrado.")
         time.sleep(3)
 
     
@@ -300,13 +326,15 @@ class CrudProducts(ICrud):
         borrarPantalla()
         print('\033c', end='')
         print(green_color + "*" * 90 + reset_color)
-        print(blue_color + "Eliminar productos productos")
-        print(blue_color + Company.get_business_name())
+        gotoxy(15,2);print(blue_color + Company.get_business_name())
+        gotoxy(25,3);print(blue_color + "Eliminar productos productos")
+        print("-" * 90)
 
         id = int(input('Ingrese el ID del producto desea eliminar: '))
         json_file = JsonFile(path + '/archivos/products.json')
         products = json_file.read()
         
+
         found_product = None
         for product in products:
             if product['id'] == id:
@@ -315,20 +343,21 @@ class CrudProducts(ICrud):
 
         
         if found_product:
-            print(f"Su producto es: {found_product}")
+            print("-" * 90)
+            print(f"Su producto es: {found_product['descripcion']}")
             respuesta = input('Esta seguro de eliminar este producto? (s/n): ').lower()
             if respuesta == 's':
-                
-                print('Se elimino su producto')
+                print("-" * 90)
+                gotoxy(25,8);print('Se elimino su producto')
                 for i, product in enumerate(products):
                     product['id'] = i + 1
                 
                 json_file.save(products)
-            
-                print('Se actualizaron los ID de los productos')
+                print("-" * 90)
+                gotoxy(15,9);print('Se actualizaron los ID de los productos')
                 time.sleep(3)
             else:
-                print('Cancelando eliminacion...')
+                gotoxy(15,5);print('Cancelando eliminacion...')
                 time.sleep(3)
         else:
             print('Producto no encontrado')
@@ -337,24 +366,26 @@ class CrudProducts(ICrud):
     
     def consult(self):
         print('\033c', end='')
-        gotoxy(2,1);print(green_color+"█"*90)
-        gotoxy(2,2);print("██"+" "*34+"Consulta de Productos"+" "*35+"██")
-        gotoxy(2,4);id = int(input("Ingrese ID del producto: "))
+        gotoxy(2,1);print(green_color+"*"*90)
+        gotoxy(15,2);print(blue_color + Company.get_business_name())
+        gotoxy(22,3);print("Consulta de Productos")
+        print("-" * 90)
+        print()
+        gotoxy(1,5);id = int(input("Ingrese ID del producto: "))
         json_file = JsonFile(path+'/archivos/products.json')
         products = json_file.find("id", id)
         
         if products:
             for product in products:
-                print("-" * 30)
-                print(f'ID: {product["id"]}')
+                print("-" * 90)
                 print(f'Descripcion: {product["descripcion"]}')
                 print(f'Precio: {product["precio"]}')
                 print(f'Stock: {product["stock"]}')
-                print("-" * 30)
+                print("-" * 90)
                 
             time.sleep(3)
         else:
-            print("Producto no encontrado.")
+            gotoxy(15,8);print("Producto no encontrado.")
             time.sleep(3)
         input("Presione una tecla para continuar...")   
 
@@ -367,19 +398,22 @@ class CrudSales(ICrud):
 
         # Imprime la cabecera de la venta
         gotoxy(1, 1);print(green_color + "*" * 90 + reset_color)
-        gotoxy(1, 2);print(blue_color + "Registro de Venta")
-        gotoxy(1, 3);print(blue_color + Company.get_business_name())
-        gotoxy(1, 4);print(f"Factura#: F0999999 {' ' * 3} Fecha: {datetime.datetime.now()}")
-       
-        gotoxy(1, 6);print("Subtotal:")
-        gotoxy(1, 7);print("Descuento:")
-        gotoxy(1, 8);print("Iva     :")
-        gotoxy(1, 9);print("Total   :")
-        gotoxy(1,10); print("Cedula :")
-
-
-        dni = validar.solo_numeros("Error: Solo números", 10, 8)  # Solicita el número de cédula del cliente
+        gotoxy(27, 2);print(blue_color + "Registro de Venta")
+        gotoxy(14, 3);print(blue_color + Company.get_business_name())
+        gotoxy(5, 4);print(f"Factura#: F0999999 {' ' * 5}  Fecha: {datetime.datetime.now()}")
         
+
+        gotoxy(72, 4);print("Subtotal:")
+        gotoxy(72, 5);print("Descuento:")
+        gotoxy(72, 6);print("Iva     :")
+        gotoxy(72, 7);print("Total   :")
+        gotoxy(1,6); print("Cedula :")
+        
+
+
+        dni = validar.solo_numeros("Error: Solo números", 10, 6)  # Solicita el número de cédula del cliente
+       
+
         json_file = JsonFile(path +'/archivos/clients.json')
 
         client = json_file.find("dni", dni)  # Busca al cliente por su número de cédula
@@ -394,7 +428,7 @@ class CrudSales(ICrud):
 
         sale = Sale(cli)  # Crea una venta asociada al cliente
 
-        print(cli.fullName())
+        gotoxy(30,6);print(cli.fullName())
         gotoxy(1, 11);print(green_color + "*" * 90 + reset_color)
         gotoxy(1, 12);print(purple_color + "Linea ", " Id_Articulo ", "   Descripción   ", " Precio " ," Cantidad ", " Subtotal ")
         gotoxy(1, 13);print(reset_color + "-" * 90)
@@ -413,17 +447,16 @@ class CrudSales(ICrud):
             prods = json_file.find("id", id)  # Busca el producto por su ID
 
             if not prods:
-                gotoxy(1, 15);print("Producto no existe")
-                
+                gotoxy(10, 15);print("Producto no existe")       
                 time.sleep(3)
                 break
             else:
                 prods = prods[0]
                 product = Product(prods["id"], prods["descripcion"], prods["precio"],prods["stock"])  # Crea un producto en la factura
 
-                gotoxy(26,9);print(product.descrip)
-                gotoxy(42,9); print(product.preci)
-                qyt = int(validar.solo_numeros("Error: Solo números", 53, 9))  # Solicita la cantidad de producto
+                gotoxy(26,6);print(product.descrip)
+                gotoxy(42,6); print(product.preci)
+                qyt = int(validar.solo_numeros("Error: Solo números", 53, 6))  # Solicita la cantidad de producto
 
                 if qyt > product.stock:
                     gotoxy(1, 15);print(f"El producto solo tiene un stock de {product.stock} ")
@@ -431,8 +464,8 @@ class CrudSales(ICrud):
                     if respuesta == 's':
                         qyt = product.stock  # Actualiza la cantidad a la disponible en stock
                         new_subtotal = product.preci * qyt  # Calcula el nuevo subtotal
-                        gotoxy(53, 7); print(qyt)  # Imprime la nueva cantidad
-                        gotoxy(63, 7); print(new_subtotal)  # Imprime el nuevo subtotal
+                        gotoxy(53, 4); print(qyt)  # Imprime la nueva cantidad
+                        gotoxy(63, 4); print(new_subtotal)  # Imprime el nuevo subtotal
                         time.sleep(3)
                         
                         sale.add_detail(product, qyt)
@@ -440,24 +473,25 @@ class CrudSales(ICrud):
                         
                     else:
                         subtotal = product.preci * qyt
-                        gotoxy(63,9);print(subtotal)
+                        gotoxy(63,6);print(subtotal)
                         sale.add_detail(product, qyt)  # Agrega el detalle de la venta
                 else:
                     subtotal = product.preci * qyt
-                    gotoxy(63,9);print(subtotal)
+                    gotoxy(63,45);print(subtotal)
                     sale.add_detail(product, qyt)
-                    follow = input("¿Desea agregar otro producto? (s/n): ").lower()
+
+                if qyt != product.stock:
+                    gotoxy(1,9);follow = input("¿Desea agregar otro producto? (s/n): ").lower()
                     if follow == "s":
                         print(green_color + "✔" + reset_color)
                         line += 1
                     else:
-
                         print(f"Subtotal: {round(sale.subtotal, 2)}")
                         print(f"Descuento: {round(sale.discount, 2)}")
                         print(f"Iva     : {round(sale.iva, 2)}")
                         print(f"Total   : {round(sale.total, 2)}")
 
-        print(red_color + "¿Está seguro de grabar la venta? (s/n): ", end='')
+        gotoxy(1,78);print(red_color + "¿Está seguro de grabar la venta? (s/n): ", end='')
         procesar = input().lower()  # Pregunta si se quiere grabar la venta
         if procesar == "s":
             print("😊 Venta Grabada satisfactoriamente 😊" + reset_color)
@@ -477,275 +511,102 @@ class CrudSales(ICrud):
         time.sleep(3)
 
     def update(self):
-        validar = Valida()
-        borrarPantalla()
-        print('\033c', end='')
+        file_json = JsonFile(path + '/archivos/invoices.json')
+        product_json = JsonFile(path + '/archivos/products.json')
+        invoice_number = int(input('Ingrese el numero de la factura: '))
+        
+    
+        invoices = file_json.read()
+        products = product_json.read()
+        
+        if invoices is None:
+            print("No hay facturas para actualizar")
+            time.sleep(2)
+            return
+        
+        for invoice in invoices:
+            if invoice['factura'] == invoice_number:
+                print("Información de la factura:")
+                for key, value in invoice.items():
+                    if key != 'detalle':
+                        print(f"{key}: {value}")
+                print("Información del cliente: ")
+                print(invoice['cliente'])
+                print("Productos en la factura:")
+                for product in invoice['detalle']:
+                    product_info = ', '.join([f"{key}: {value}" for key, value in product.items()])
+                    print(product_info)
 
-        json_file_invoices_archivos = JsonFile(path  + '/archivos/invoices.json')
-        invoices = json_file_invoices_archivos.read()
-
-        # Mostrar las facturas disponibles
-        opciones = [f"{factura['factura']}) Factura: #{factura['factura']}" for factura in invoices]
-        menu_factura = Menu("Menu Facturas", opciones, 20, 10)
-        print("Seleccione la factura que desea modificar:")
-        selected_invoice_str = menu_factura.menu()
-
-        # Obtener el número de factura seleccionada
-        selected_invoice_num = int(selected_invoice_str)
-
-        # Buscar la factura seleccionada
-        selected_invoice_index = None
-
-        for index, factura in enumerate(invoices):
-            if factura['factura'] == selected_invoice_num:
-                selected_invoice_index = index
-                break
-
-        if selected_invoice_index is not None:
-            # Mostrar detalles de la factura seleccionada
-            selected_invoice = invoices[selected_invoice_index]
-            print("Factura:", selected_invoice['factura'])
-            print("Fecha:", selected_invoice['Fecha'])
-            print("Cliente:", selected_invoice['cliente'])
-            print("Subtotal:", selected_invoice['subtotal'])
-            print("Descuento:", selected_invoice['descuento'])
-            print("IVA:", selected_invoice['iva'])
-            print("Total:", selected_invoice['total'])
-            print("Detalles:")
-            for detalle in selected_invoice['detalle']:
-                print("\tProducto:", detalle['poducto'])
-                print("\tpreci:", detalle['precio'])
-                print("\tCantidad:", detalle['cantidad'])
-            print()
-
-            # Permitir al usuario seleccionar qué desea modificar
-            menu_update = Menu("¿Qué opción desea modificar?", ["1) Cliente", "2) Detalles", "3) Todo"], 20, 10)
-
-            selected_update = menu_update.menu()
-
-            if selected_update == "1":
-
-                print("Ingrese el numero de cédula del cliente:", end=" ")
-
-                gotoxy(5,5);dni = int(input())  # Solicita el número de cédula del cliente
-               
-
-                json_file_client_archivos = JsonFile(path  + '/archivos/clients.json')
-
-                client = json_file_client_archivos.find("dni", dni)  # Busca al cliente por su número de cédula
-
-                if not client:
-                    print("Cliente no existe")
-                    time.sleep(3)
-                    return
-
-                client = client[0]
-
-                cli = RegularClient(client["nombre"], client["apellido"], client["dni"],card=True)  # Crea un cliente RegularClient
-
-                sale = Sale(cli)
-
-                json_file = JsonFile(path + '/archivos/products.json')
-
-                products = []
-
-                for detalle in selected_invoice['detalle']:
-                    prods_by_descrip = json_file.find('descripcion', detalle['poducto'])
-                    products.append(prods_by_descrip[0]['id'])
-
-                for i, product in enumerate(products):
-                    print()
-
-                    prods = json_file.find("id", product)  # Busca el producto por su ID
-
-                    if not prods:
-                        print("Producto no existe")
-                        time.sleep(3)
+                while True:
+                    print("1. Añadir producto")
+                    print("2. Eliminar producto")
+                    print("3. Cambiar cantidad de producto")
+                    
+                    option = input("Seleccione una opción: ")
+                    
+                    if option == "1":
+                        product_id = int(input("Ingrese el ID del producto que desea añadir: "))
+                        product_to_add = next((prod for prod in products if prod['id'] == product_id), None)
+                        if product_to_add is None:
+                            print("Por favor, ingrese un ID de producto válido")
+                            time.sleep(2)
+                            continue
+                            
+                        product_quantity = int(input("Ingrese la cantidad del producto que desea añadir: "))
+                        new_product = {
+                            "producto": product_to_add['descripcion'],
+                            "cantidad": product_quantity,
+                            "precio": product_to_add['precio']
+                        }
+                        invoice['detalle'].append(new_product)
+                        # Actualizar los totales de la factura
+                        invoice['subtotal'] = sum([float(product['precio']) * int(product['cantidad']) for product in invoice['detalle']])
+                        invoice['descuento'] = invoice['subtotal'] * 0.10  # Assuming a 10% discount
+                        invoice['iva'] = invoice['subtotal'] * 0.12  # Assuming a 12% iva
+                        invoice['total'] = invoice['subtotal'] - invoice['descuento'] + invoice['iva']
+                        print("Se ha añadido el producto")
+                        file_json.save(invoices)
+                        
+                    elif option == "2":
+                        product_description = input("Ingrese la descripción del producto que desea eliminar: ")
+                        for i, product in enumerate(invoice['detalle']):
+                            if product['poducto'] == product_description:
+                                del invoice['detalle'][i]
+                                # Actualizar los totales de la factura
+                                invoice['subtotal'] = sum([float(product['precio']) * int(product['cantidad']) for product in invoice['detalle']])
+                                invoice['descuento'] = invoice['subtotal'] * 0.10  # Assuming a 10% discount
+                                invoice['iva'] = invoice['subtotal'] * 0.15  # Assuming a 15% iva
+                                invoice['total'] = invoice['subtotal'] - invoice['descuento'] + invoice['iva']
+                                print("Se ha eliminado el producto")
+                                file_json.save(invoices)
+                                time.sleep(4)
+                                break
+                            else:
+                                print("Producto no encontrado")
+                        
+                    elif option == "3":
+                        product_description = input("Ingrese la descripción del producto cuya cantidad desea cambiar: ")
+                        for product in invoice['detalle']:
+                            if product['poducto'] == product_description:
+                                new_quantity = int(input("Ingrese la nueva cantidad del producto: "))
+                                product['cantidad'] = new_quantity
+                                # Actualizar los totales de la factura
+                                invoice['subtotal'] = sum([float(product['precio']) * int(product['cantidad']) for product in invoice['detalle']])
+                                invoice['descuento'] = invoice['subtotal'] * 0.10  # Assuming a 10% discount
+                                invoice['iva'] = invoice['subtotal'] * 0.12  # Assuming a 12% iva
+                                invoice['total'] = invoice['subtotal'] - invoice['descuento'] + invoice['iva']
+                                print("Se ha actualizado el producto")
+                                file_json.save(invoices)
+                                time.sleep(4)
+                                break
+                            else:
+                                print("Producto no encontrado")
+                            time.sleep(4)
                     else:
-                        prods = prods[0]
-
-                        product = Product(prods["id"], prods["descrip"], prods["preci"], prods["stock"])  # Crea un producto
-
-                        print(product.descrip, str(product.preci), end=' ')
-
-                        product_quantity = selected_invoice['detalle'][i]['cantidad']  # Solicita la cantidad de producto
-
-                        subtotal = product.preci * product_quantity
-
-                        print(str(product_quantity), subtotal)
-
-                        sale.add_detail(product, product_quantity)  # Agrega el detalle de la venta
-
-                        print(f"Subtotal: {round(sale.subtotal, 2)}")
-
-                        print(f"Descuento: {round(sale.discount, 2)}")
-
-                        print(f"Iva     : {round(sale.iva, 2)}")
-
-                        print(f"Total   : {round(sale.total, 2)}")
-
-                print(red_color + "¿Está seguro de actualizar el cliente? (s/n): ", end='')
-
-                procesar = input().lower()  # Pregunta si se quiere grabar la venta
-                if procesar == "s":
-                    print("😊 Actualización Grabada satisfactoriamente 😊" + reset_color)
-                    archivos = sale.getJson()
-                    archivos["factura"] = selected_invoice['factura']
-                    invoices[selected_invoice_index] = archivos
-                    json_file = JsonFile(path  + '/archivos/invoices.json')
-                    json_file.save(invoices)
-                else:
-                    print("🤣 Actualización Cancelada 🤣" + reset_color)
-                time.sleep(2)
-
-            elif selected_update == "2":
-
-                json_file_client_archivos = JsonFile(path  + '/archivos/clients.json')
-
-                cliente = selected_invoice['cliente']
-                primera_palabra = cliente.split()[0]
-
-                client = json_file_client_archivos.find("nombre", primera_palabra)  # Busca al cliente por su número de cédula
-
-                if not client:
-                    print("Cliente no existe")
-                    return
-
-                print(cliente)
-
-                client = client[0]
-
-                cli = RegularClient(client["nombre"], client["apellido"], client["dni"], card=True)  # Crea un cliente RegularClient
-
-                sale = Sale(cli)
-
-                # Detalle de la venta
-                follow = "s"
-                line = 1
-
-                while follow.lower() == "s":
-                    print(f"{line}".ljust(6), end="   ")
-                    id = int(validar.solo_numeros("Error: Solo números", 5, 6))  # Solicita el ID del producto
-                    json_file = JsonFile(path  + '/archivos/products.json')
-
-                    prods = json_file.find("id", id)  # Busca el producto por su ID
-
-                    if not prods:
-                        print("Producto no existe")
-                        time.sleep(1)
-                    else:
-                        prods = prods[0]
-                        product = Product(prods["id"], prods["descrip"], prods["preci"], prods["stock"])  # Crea un producto
-                        print(product.descrip, str(product.preci), end=' ')
-                        qyt = int(
-                            validar.solo_numeros("Error: Solo números", 7, 34))  # Solicita la cantidad de producto
-                        subtotal = product.preci * qyt
-                        print(str(qyt), subtotal)
-                        sale.add_detail(product, qyt)  # Agrega el detalle de la venta
-                        print(f"Subtotal: {round(sale.subtotal, 2)}")
-                        print(f"Descuento: {round(sale.discount, 2)}")
-                        print(f"Iva     : {round(sale.iva, 2)}")
-                        print(f"Total   : {round(sale.total, 2)}")
-                        follow = input("¿Desea agregar otro producto? (s/n): ") or "s"
-                        print(green_color + "✔" + reset_color)
-                        line += 1
-
-                print(red_color + "¿Está seguro de grabar la venta? (s/n): ", end='')
-                procesar = input().lower()  # Pregunta si se quiere grabar la venta
-                if procesar == "s":
-                    print("😊 Actualización Grabada satisfactoriamente 😊" + reset_color)
-                    archivos = sale.getJson()
-                    archivos["factura"] = selected_invoice['factura']
-                    invoices[selected_invoice_index] = archivos
-                    json_file = JsonFile(path  + '/archivos/invoices.json')
-                    json_file.save(invoices)
-                else:
-                    print("🤣 Venta Cancelada 🤣" + reset_color)
-                time.sleep(2)
-
-            elif selected_update == "3":
-                validar = Valida()
-                borrarPantalla()
-
-                print('\033c', end='')  # Limpia la pantalla
-
-                # Imprime la cabecera de la venta
-                print(green_color + "*" * 90 + reset_color)
-                print(blue_color + "Registro de Venta")
-                print(blue_color + Company.get_business_name())
-                print(f"Factura#: F0999999 {' ' * 3} Fecha: {datetime.datetime.now()}")
-                print("Subtotal:")
-                print("Descuento:")
-                print("Iva     :")
-                print("Total   :")
-                print("Cédula:")
-
-                dni = validar.solo_numeros("Error: Solo números", 8, 9)  # Solicita el número de cédula del cliente
-
-                json_file = JsonFile(path + '/archivos/clients.json')
-
-                client = json_file.find("dni", dni)  # Busca al cliente por su número de cédula
-                if not client:
-                    print("Cliente no existe")
-                    return
-                client = client[0]
-
-                cli = RegularClient(client["nombre"], client["apellido"], client["dni"], card=True)  # Crea un cliente RegularClient
-
-                sale = Sale(cli)  # Crea una venta asociada al cliente
-
-                print(cli.fullName())
-                print(green_color + "*" * 90 + reset_color)
-                print(purple_color + "Linea", "Id_Articulo", "descrip", "preci", "Cantidad", "Subtotal")
-                print(reset_color + "-" * 90)
-
-                # Detalle de la venta
-                follow = "s"
-                line = 1
-
-                while follow.lower() == "s":
-                    print(f"{line}", end="   ")
-                    id = int(validar.solo_numeros("Error: Solo números", 5, 25))  # Solicita el ID del producto
-                    json_file = JsonFile(path  + '/archivos/products.json')
-
-                    prods = json_file.find("id", id)  # Busca el producto por su ID
-
-                    if not prods:
-                        print("Producto no existe")
-                        time.sleep(1)
-                    else:
-                        prods = prods[0]
-                        product = Product(prods["id"], prods["descrip"], prods["preci"], prods["stock"])  # Crea un producto
-                        print(product.descrip, str(product.preci), end=' ')
-                        qyt = int(
-                        validar.solo_numeros("Error: Solo números", 4, 45))  # Solicita la cantidad de producto
-                        subtotal = product.preci * qyt
-                        print(str(qyt), subtotal)
-                        sale.add_detail(product, qyt)  # Agrega el detalle de la venta
-                        print(f"Subtotal: {round(sale.subtotal, 2)}")
-                        print(f"Descuento: {round(sale.discount, 2)}")
-                        print(f"Iva     : {round(sale.iva, 2)}")
-                        print(f"Total   : {round(sale.total, 2)}")
-                        follow = input("¿Desea agregar otro producto? (s/n): ") or "s"
-                        print(green_color + "✔" + reset_color)
-                        line += 1
-
-                print(red_color + "¿Está seguro de grabar la venta? (s/n): ", end='')
-                procesar = input().lower()  # Pregunta si se quiere grabar la venta
-                if procesar == "s":
-                    archivos = sale.getJson()
-                    archivos["factura"] = selected_invoice['factura']
-                    invoices[selected_invoice_index] = archivos
-                    json_file = JsonFile(path  + '/archivos/invoices.json')
-                    json_file.save(invoices)
-                else:
-                    print("🤣 Venta Cancelada 🤣" + reset_color)
-                time.sleep(2)
-            else:
-                print("Opción no válida.")
-
-        else:
-            print("Factura no encontrada.")
+                        print("Opción no válida")
+                        time.sleep(4)
+            print("No se ha encontrado la factura")
+            time.sleep(4)
 
     def delete(self):
         # Cargar datos de facturas desde el archivo JSON
@@ -756,7 +617,7 @@ class CrudSales(ICrud):
         opciones = [f"{factura['factura']}) Factura: #{factura['factura']}" for factura in invoices]
         menu_delete = Menu("Menu Eliminar", opciones, 20, 10)
 
-        print("Seleccione la factura que desea modificar:")
+        print("Seleccione la factura que desea eliminar:")
         selected_invoice_str = menu_delete.menu()
         selected_invoice_num = int(selected_invoice_str.split(')')[0])
 
@@ -778,10 +639,10 @@ class CrudSales(ICrud):
             print("IVA:", selected_invoice['iva'])
             print("Total:", selected_invoice['total'])
             print("Detalles:")
-            for detalle in selected_invoice['detalle']:
-                print("\tProducto:", detalle['producto'])
-                print("\tpreci:", detalle['preci'])
-                print("\tCantidad:", detalle['cantidad'])
+            for detalle in selected_invoice["detalle"]:
+                print("\tProducto:", detalle["poducto"])
+                print("\tprecio:", detalle["precio"])
+                print("\tCantidad:", detalle["cantidad"])
             print()
 
             print("¿Está seguro de eliminar la venta? (s/n): ", end='')
@@ -803,15 +664,25 @@ class CrudSales(ICrud):
 
     def consult(self):
         print('\033c', end='')
-        print(green_color + "█" * 90)
-        print("██" + " " * 34 + "Consulta de Venta" + " " * 35 + "██")
+        print(green_color + "*" * 90)
+        print("Consulta de Venta")
         invoice = input("Ingrese Factura: ")
         if invoice.isdigit():
             invoice = int(invoice)
             json_file = JsonFile(path  + '/archivos/invoices.json')
             invoices = json_file.find("factura", invoice)
-            print(f"Impresión de la Factura#{invoice}")
-            print(invoices)
+            print(f"Impresión de la Factura# {invoice} ")
+            for invoice in invoices:
+                for key, value in invoice.items():
+                    if key == 'detalle':
+                        print('Informacion de la factura:')
+                        for item in value:
+                            print(f'Producto:{item["poducto"]}')
+                            print(f'Precio:{item["precio"]}')
+                            print(f'Cantidad:{item["cantidad"]}')
+                    else:
+                        print(f'{key}:{value}')
+
         else:
             json_file = JsonFile(path  + '/archivos/invoices.json')
             invoices = json_file.read()
