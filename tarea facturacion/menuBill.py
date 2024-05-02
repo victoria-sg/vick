@@ -76,7 +76,7 @@ class CrudClients(ICrud):
                 new_client = VipClient(nombre, apellido, dni)
                 clients.append(new_client.getJson())
                 json_file.save(clients)
-                gotoxy(15,5);print("Cliente registrado exitosamente!")
+                gotoxy(15,15);print("Cliente registrado exitosamente!")
                 time.sleep(3)
             new_client = VipClient(nombre, apellido, dni)
         else:
@@ -164,14 +164,15 @@ class CrudClients(ICrud):
             if opcion == "s":
                 clients.remove(found_dni[0]) 
                 json_file.save(clients)  
-                gotoxy(15,5);print("El cliente ha sido eliminado correctamente.")
+                gotoxy(15,10);print("El cliente ha sido eliminado correctamente.")
                 time.sleep(3)
             else:
                 gotoxy(15,5);print("Operación cancelada...")
                 time.sleep(3)
                 return
         else:
-            gotoxy(15,5);print("No se encontró ningún cliente con el DNI proporcionado.")
+            print()
+            gotoxy(15,10);print("No se encontró ningún cliente con el DNI proporcionado.")
             time.sleep(3)
 
     
@@ -182,7 +183,7 @@ class CrudClients(ICrud):
         gotoxy(2,1);print(green_color+"*"*90)
         gotoxy(27,3);print("Consulta de Cliente")
         print("-" * 90) 
-        gotoxy(1,);dni = input('Ingrese DNI del cliente: ')
+        gotoxy(1,5);dni = input('Ingrese DNI del cliente: ')
         
         json_file = JsonFile(path+'/archivos/clients.json')
         clients = json_file.find("dni", dni)
@@ -196,10 +197,11 @@ class CrudClients(ICrud):
                 print("-" * 90) 
             time.sleep(3)
         else:
+            print()
             gotoxy(15,6);print("Cliente no encontrado.")
             time.sleep(3)
-        print()
-        gotoxy(15,6);input("Presione una tecla para continuar...")  
+            print()
+        gotoxy(10,6);input("Presione una tecla para continuar...")  
          
 
 class CrudProducts(ICrud):
@@ -267,7 +269,7 @@ class CrudProducts(ICrud):
         
             print('Qué va a actualizar?')
             print('1. Nombre del producto.')
-            print('2. precio del producto.')
+            print('2. Precio del producto.')
             print('3. Stock del producto.')
             print()
             opcion = input('Elija una opción: ')
@@ -402,22 +404,17 @@ class CrudSales(ICrud):
         gotoxy(14, 3);print(blue_color + Company.get_business_name())
         gotoxy(5, 4);print(f"Factura#: F0999999 {' ' * 5}  Fecha: {datetime.datetime.now()}")
         
-
         gotoxy(72, 4);print("Subtotal:")
         gotoxy(72, 5);print("Descuento:")
         gotoxy(72, 6);print("Iva     :")
         gotoxy(72, 7);print("Total   :")
         gotoxy(1,6); print("Cedula :")
-        
-
-
+            
         dni = validar.solo_numeros("Error: Solo números", 10, 6)  # Solicita el número de cédula del cliente
-       
-
+            
         json_file = JsonFile(path +'/archivos/clients.json')
-
         client = json_file.find("dni", dni)  # Busca al cliente por su número de cédula
-        
+            
         if not client:
             gotoxy(1, 10);print("Cliente no existe")
             time.sleep(3)
@@ -441,9 +438,8 @@ class CrudSales(ICrud):
             gotoxy(1, 14); print(f"{line}", end="   ")
             id = validar.solo_numeros("Error: Solo números", 13, 13)  # Solicita el ID del producto
             id=int(id)
-            
+                
             json_file = JsonFile( path+ '/archivos/products.json')
-
             prods = json_file.find("id", id)  # Busca el producto por su ID
 
             if not prods:
@@ -460,7 +456,7 @@ class CrudSales(ICrud):
 
                 if qyt > product.stock:
                     gotoxy(1, 15);print(f"El producto solo tiene un stock de {product.stock} ")
-                    respuesta = input('Desea llevar esa cantidad? (s/n): ').lower()
+                    gotoxy(1, 15);respuesta = input('Desea llevar esa cantidad? (s/n): ').lower()
                     if respuesta == 's':
                         qyt = product.stock  # Actualiza la cantidad a la disponible en stock
                         new_subtotal = product.preci * qyt  # Calcula el nuevo subtotal
@@ -469,27 +465,22 @@ class CrudSales(ICrud):
                         time.sleep(3)
                         
                         sale.add_detail(product, qyt)
-                        break
-                        
-                    else:
-                        subtotal = product.preci * qyt
-                        gotoxy(63,6);print(subtotal)
-                        sale.add_detail(product, qyt)  # Agrega el detalle de la venta
+
                 else:
                     subtotal = product.preci * qyt
-                    gotoxy(63,45);print(subtotal)
+                    gotoxy(63,6);print(subtotal)
                     sale.add_detail(product, qyt)
 
-                if qyt != product.stock:
-                    gotoxy(1,9);follow = input("¿Desea agregar otro producto? (s/n): ").lower()
-                    if follow == "s":
-                        print(green_color + "✔" + reset_color)
-                        line += 1
-                    else:
-                        print(f"Subtotal: {round(sale.subtotal, 2)}")
-                        print(f"Descuento: {round(sale.discount, 2)}")
-                        print(f"Iva     : {round(sale.iva, 2)}")
-                        print(f"Total   : {round(sale.total, 2)}")
+            if qyt != product.stock or respuesta == 's':
+                gotoxy(1,18);follow = input('¿Desea agregar otro producto? (s/n): ').lower()
+                if follow == "s":
+                    gotoxy(78,9);print(green_color + "✔" + reset_color)
+                    line += 1
+                else:
+                    gotoxy(80, 0);print(f"{round(sale.subtotal, 2)}")
+                    gotoxy(80,5 );print(f"{round(sale.discount, 2)}")
+                    gotoxy(80, -1);print(f"{round(sale.iva, 2)}")
+                    gotoxy(80, 0);print(f"{round(sale.total, 2)}")
 
         gotoxy(1,78);print(red_color + "¿Está seguro de grabar la venta? (s/n): ", end='')
         procesar = input().lower()  # Pregunta si se quiere grabar la venta
@@ -509,6 +500,7 @@ class CrudSales(ICrud):
         else:
             print("🤣 Venta Cancelada 🤣" + reset_color)
         time.sleep(3)
+
 
     def update(self):
         file_json = JsonFile(path + '/archivos/invoices.json')
@@ -650,6 +642,15 @@ class CrudSales(ICrud):
             if procesar == "s":
                 # Eliminar la factura seleccionada de la lista
                 del invoices[selected_invoice_index]
+
+                #Actualizar los id de las facturas al eliminar
+                for i, invoice in enumerate(invoices, start=1):
+                    invoice['factura'] = i 
+                
+                
+                print("-" * 90)
+                gotoxy(15,9);print('Se actualizaron los ID de las facturas')
+                time.sleep(3)
 
                 # Escribir los datos actualizados de vuelta al archivo JSON
                 with open(path  + '/archivos/invoices.json', 'w') as json_file:
